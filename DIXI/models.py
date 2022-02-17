@@ -32,3 +32,4 @@ class Review(Base):
     username = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     text = sqlalchemy.Column(sqlalchemy.String(500), nullable=False)
     product_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('product.id'))
+    product = relationship('Product', back_populates='review')

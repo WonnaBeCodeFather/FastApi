@@ -8,7 +8,6 @@ class ReviewBase(BaseModel):
 
 
 class ReviewCreate(ReviewBase):
-    product_id: int
     pass
 
 
@@ -23,7 +22,7 @@ class PriceBase(BaseModel):
 
 
 class CreatePrice(PriceBase):
-    product_id: int
+    pass
 
 
 class Pice(PriceBase):
