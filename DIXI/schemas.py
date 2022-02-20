@@ -1,10 +1,26 @@
+from enum import Enum
+
 from pydantic import BaseModel
 from typing import List
+
+
+class ProductGender(str, Enum):
+    male = 'male'
+    female = 'female'
+
+
+class ProductSeason(str, Enum):
+    demi = 'demi'
+    summer = 'summer'
+    winter = 'winter'
 
 
 class ReviewBase(BaseModel):
     username: str
     text: str
+
+    class Config:
+        orm_mode = True
 
 
 class ReviewCreate(ReviewBase):
@@ -20,12 +36,16 @@ class PriceBase(BaseModel):
     discount: int
     new_price: float
 
+    class Config:
+        orm_mode = True
 
-class CreatePrice(PriceBase):
-    pass
+
+class CreatePrice(BaseModel):
+    price: float
+    discount: int
 
 
-class Pice(PriceBase):
+class Price(PriceBase):
     id: int
 
 
@@ -35,12 +55,17 @@ class ProductBase(BaseModel):
     season: str
     factory: str
 
+    class Config:
+        orm_mode = True
+
 
 class ProductCreate(ProductBase):
-    pass
+    gender: ProductGender
+    season: ProductSeason
+    price: List[CreatePrice]
 
 
 class Product(ProductBase):
     id: int
-    price: List[Pice]
+    price: List[PriceBase]
     review: List[Review]
