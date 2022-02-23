@@ -35,3 +35,11 @@ class Review(Base):
     text = sqlalchemy.Column(sqlalchemy.String(500), nullable=False)
     product_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('product.id'), nullable=False)
     product = relationship('Product', back_populates='review')
+
+
+class User(Base):
+    __tablename__ = 'user'
+
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    username = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    password_hash = sqlalchemy.Column(sqlalchemy.String, nullable=False)

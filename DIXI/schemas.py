@@ -49,7 +49,18 @@ class Price(PriceBase):
     id: int
 
 
+class ProductUpdate(BaseModel):
+    title: str
+    gender: str
+    season: str
+    factory: str
+
+    class Config:
+        orm_mode = True
+
+
 class ProductBase(BaseModel):
+    id: int
     title: str
     gender: str
     season: str
@@ -66,6 +77,25 @@ class ProductCreate(ProductBase):
 
 
 class Product(ProductBase):
-    id: int
     price: List[PriceBase]
     review: List[Review]
+
+
+class UserBase(BaseModel):
+    username: str
+
+
+class UserCreate(UserBase):
+    password: str
+
+
+class User(UserBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = 'bearer'
+

@@ -2,10 +2,12 @@ from typing import List
 from fastapi import status, HTTPException
 
 from fastapi import Depends
+from sqlalchemy import exists, func, alias, select
 from sqlalchemy.orm import Session
 
 from DIXI import models, schemas
 from DIXI.db import get_session
+from passlib.hash import bcrypt
 
 
 class ProductService:
@@ -33,7 +35,7 @@ class ProductService:
 
     def create_price(self, product_id: int, data: schemas.ProductCreate):
         parser_price = dict(*data.price)
-        if parser_price['discount']:
+        if parser_price['discount']:  # formation of the price taking into account the discount
             new_price = parser_price['price'] - (parser_price['price'] * (parser_price['discount'] / 100))
         else:
             new_price = 0
@@ -45,6 +47,24 @@ class ProductService:
         self.session.add(price)
         self.session.commit()
         return data
+
+    def update_product(self, product_id: int, data: schemas.ProductUpdate):
+        operation = self.session.query(models.Product).filter_by(id=product_id).first()
+        for field, value in data:
+            setattr(operation, field, value)
+        self.session.commit()
+        return operation
+
+    def test(self):
+        # tester = self.session.query(func.count()).select_from(models.Product, models.Price).join(models.Product.id == models.Price.product_id)
+        toster = self.session.query(models.Product.title, models.Price.price).filter(models.Product.id == models.Price.product_id).subquery()
+        zxc = self.session.query(func.count()).select_from(models.Product).where(models.Product.title == 'string').subquery()
+        tryit = self.session.query(models.Product.title, models.Price.price).filter(
+            models.Product.id == models.Price.product_id).subquery()
+        test_func = self.session.query(func.count('xxxxx')).select_from(models.Product, models.Price).filter(models.Product.id == models.Price.product_id)
+        # x = self.session.query(func.count()).select_from(toster).scalar()
+        print('**********************************************')
+        return
 
 
 class ReviewService:
@@ -58,3 +78,13 @@ class ReviewService:
         self.session.add(review)
         self.session.commit()
         return data
+
+
+class AuthService:
+    @classmethod
+    def verify_password(cls, password: str, hashed_password: str) -> bool:
+        return bcrypt.verify(password, hashed_password)
+
+    @classmethod
+    def hash_password(cls, password: str) -> str:
+        return bcrypt.hash(password)
