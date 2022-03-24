@@ -10,15 +10,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 app = FastAPI()
 
 
-def get_db():
-    db = Session()
-    try:
-        yield db
-    finally:
-        db.close()
 
-
-@app.post("/product/create")
+@app.post("/product/create", response_model=schemas.ProductCreate)
 def create_product(product: schemas.ProductCreate, service: service.ProductService = Depends()):
     return service.create_product(product)
 
@@ -49,10 +42,13 @@ def update_product(id: int, data: schemas.ProductUpdate, service: service.Produc
 
 
 @app.post('/login', response_model=schemas.Token)
-def login(data: OAuth2PasswordRequestForm = Depends()):
-    pass
+def login(form_data: OAuth2PasswordRequestForm = Depends(), service:service.AuthService = Depends()):
+    return service.authenticate_user(
+        form_data.username,
+        form_data.password
+    )
 
 
 @app.post('/registration', response_model=schemas.Token)
-def registration(data: schemas.UserCreate):
-    pass
+def registration(user_data: schemas.UserCreate, service:service.AuthService = Depends()):
+    return service.register_new_user(user_data)
