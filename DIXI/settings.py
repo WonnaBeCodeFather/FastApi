@@ -1,6 +1,6 @@
+from sqlalchemy.orm import declarative_base
 
-
-
+Base = declarative_base()
 
 jwt_secret: str
 jwt_algorithm: str = 'HS256'
